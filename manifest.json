@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_ext_name__",
+  "version": "0.2.0",
+  "description": "__MSG_ext_description__",
+  "default_locale": "en",
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "action": {
+    "default_title": "__MSG_action_title__",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

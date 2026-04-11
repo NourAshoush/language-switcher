@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search Language Switcher</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="panel">
+      <div class="header">
+        <div>
+          <h1 data-i18n="popup_title">Language preferences</h1>
+          <p class="intro" data-i18n="popup_intro">Set your preferred language and region for Google Search.</p>
+        </div>
+
+        <button id="themeToggle" class="theme-toggle" type="button" data-i18n-aria-label="theme_toggle_label" data-i18n-title="theme_toggle_label" aria-label="Toggle popup theme" title="Toggle popup theme">
+          <span class="theme-toggle-icon-slot" aria-hidden="true">
+            <span id="themeToggleIcon" class="theme-toggle-icon"></span>
+          </span>
+        </button>
+      </div>
+
+      <label class="field">
+        <span data-i18n="label_interface_language">Interface language</span>
+        <select id="interfaceLanguage"></select>
+      </label>
+
+      <label class="field">
+        <span data-i18n="label_results_language">Results language</span>
+        <select id="resultsLanguage"></select>
+      </label>
+
+      <label class="field">
+        <span data-i18n="label_region">Region</span>
+        <select id="region"></select>
+      </label>
+
+      <p class="hint" data-i18n="popup_hint">
+        Changes apply when you save.
+      </p>
+
+      <div class="actions">
+        <button id="saveButton" type="button" data-i18n="button_save">Save</button>
+        <button id="defaultsButton" type="button" class="secondary" data-i18n="button_reset">Reset</button>
+      </div>
+
+      <p id="status" class="status" aria-live="polite"></p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
