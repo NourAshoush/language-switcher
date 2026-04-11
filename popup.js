@@ -3,7 +3,11 @@ const DEFAULT_SETTINGS = {
   resultsLanguage: "any",
   region: "auto"
 };
+const DEFAULT_UI_STATE = {
+  advancedOpen: false
+};
 
+const basicLanguageInput = document.getElementById("basicLanguage");
 const interfaceInput = document.getElementById("interfaceLanguage");
 const resultsInput = document.getElementById("resultsLanguage");
 const regionInput = document.getElementById("region");
@@ -12,11 +16,15 @@ const defaultsButton = document.getElementById("defaultsButton");
 const status = document.getElementById("status");
 const themeToggle = document.getElementById("themeToggle");
 const themeToggleIcon = document.getElementById("themeToggleIcon");
+const advancedToggle = document.getElementById("advancedToggle");
+const advancedToggleLabel = document.getElementById("advancedToggleLabel");
+const advancedSection = document.getElementById("advancedSection");
 const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
 const popupRoot = document.documentElement;
 
 const DEFAULT_THEME = "system";
 const THEME_ORDER = ["system", "dark", "light"];
+const CUSTOM_BASIC_VALUE = "__custom__";
 const THEME_ICONS = {
   system: `
     <svg viewBox="0 0 16 16" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -121,6 +129,21 @@ function buildResultsLanguageOptions() {
   ];
 }
 
+function buildBasicLanguageOptions() {
+  return [
+    { value: "auto", label: getMessage("option_auto") || "Auto" },
+    ...LANGUAGE_CODES.map((code) => ({
+      value: code,
+      label: buildLanguageLabel(code)
+    })),
+    {
+      value: CUSTOM_BASIC_VALUE,
+      label: getMessage("option_custom") || "Custom",
+      disabled: true
+    }
+  ];
+}
+
 function buildRegionOptions() {
   return [
     { value: "auto", label: getMessage("option_auto") || "Auto" },
@@ -170,6 +193,9 @@ function populateSelect(select, options) {
     const element = document.createElement("option");
     element.value = option.value;
     element.textContent = option.label;
+    if (option.disabled) {
+      element.disabled = true;
+    }
     select.appendChild(element);
   }
 }
@@ -190,6 +216,8 @@ function applySettings(settings) {
   ensureValidValue(interfaceInput, DEFAULT_SETTINGS.interfaceLanguage);
   ensureValidValue(resultsInput, DEFAULT_SETTINGS.resultsLanguage);
   ensureValidValue(regionInput, DEFAULT_SETTINGS.region);
+  basicLanguageInput.value = deriveBasicValue(settings);
+  ensureValidValue(basicLanguageInput, "auto");
 }
 
 function readSettingsFromForm() {
@@ -198,6 +226,41 @@ function readSettingsFromForm() {
     resultsLanguage: resultsInput.value,
     region: regionInput.value
   };
+}
+
+function deriveBasicValue(settings) {
+  if (
+    settings.interfaceLanguage === "auto" &&
+    settings.resultsLanguage === "any" &&
+    settings.region === "auto"
+  ) {
+    return "auto";
+  }
+
+  if (
+    settings.interfaceLanguage === settings.resultsLanguage &&
+    LANGUAGE_CODES.includes(settings.interfaceLanguage) &&
+    settings.region === "auto"
+  ) {
+    return settings.interfaceLanguage;
+  }
+
+  return CUSTOM_BASIC_VALUE;
+}
+
+function applyBasicValue(value) {
+  if (value === "auto") {
+    interfaceInput.value = "auto";
+    resultsInput.value = "any";
+    regionInput.value = "auto";
+    return;
+  }
+
+  if (LANGUAGE_CODES.includes(value)) {
+    interfaceInput.value = value;
+    resultsInput.value = value;
+    regionInput.value = "auto";
+  }
 }
 
 function reloadActiveTab() {
@@ -219,13 +282,21 @@ function setFieldActiveState(select, active) {
   field.classList.toggle("is-active", active);
 }
 
+function setAdvancedOpen(open) {
+  advancedSection.classList.toggle("is-open", open);
+  advancedSection.setAttribute("aria-hidden", open ? "false" : "true");
+  advancedToggle.dataset.expanded = open ? "true" : "false";
+  advancedToggleLabel.textContent = getMessage(open ? "hide_advanced" : "show_advanced");
+}
+
 localizeStaticText();
+populateSelect(basicLanguageInput, buildBasicLanguageOptions());
 populateSelect(interfaceInput, buildLanguageOptions());
 populateSelect(resultsInput, buildResultsLanguageOptions());
 populateSelect(regionInput, buildRegionOptions());
 popupRoot.lang = chrome.i18n.getUILanguage();
 
-for (const select of [interfaceInput, resultsInput, regionInput]) {
+for (const select of [basicLanguageInput, interfaceInput, resultsInput, regionInput]) {
   select.addEventListener("focus", () => {
     setFieldActiveState(select, true);
   });
@@ -240,9 +311,32 @@ for (const select of [interfaceInput, resultsInput, regionInput]) {
   });
 }
 
-chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
+basicLanguageInput.addEventListener("change", () => {
+  if (basicLanguageInput.value !== CUSTOM_BASIC_VALUE) {
+    applyBasicValue(basicLanguageInput.value);
+  }
+  setFieldActiveState(basicLanguageInput, false);
+  basicLanguageInput.blur();
+});
+
+for (const select of [interfaceInput, resultsInput, regionInput]) {
+  select.addEventListener("change", () => {
+    basicLanguageInput.value = deriveBasicValue(readSettingsFromForm());
+    ensureValidValue(basicLanguageInput, "auto");
+  });
+}
+
+advancedToggle.addEventListener("click", () => {
+  const nextOpen = advancedToggle.dataset.expanded !== "true";
+  setAdvancedOpen(nextOpen);
+  chrome.storage.sync.set({ advancedOpen: nextOpen });
+  advancedToggle.blur();
+});
+
+chrome.storage.sync.get({ ...DEFAULT_SETTINGS, ...DEFAULT_UI_STATE }, (settings) => {
   applySettings(settings);
   applyTheme(settings.themePreference || DEFAULT_THEME);
+  setAdvancedOpen(Boolean(settings.advancedOpen));
 });
 
 themeToggle.addEventListener("click", () => {
@@ -275,7 +369,7 @@ saveButton.addEventListener("click", () => {
 
 defaultsButton.addEventListener("click", () => {
   applySettings(DEFAULT_SETTINGS);
-  chrome.storage.sync.set(DEFAULT_SETTINGS, () => {
+  chrome.storage.sync.set({ ...DEFAULT_SETTINGS }, () => {
     setStatus(getMessage("status_reset") || "Default settings restored.");
     reloadActiveTab();
   });

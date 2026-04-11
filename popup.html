@@ -22,19 +22,31 @@
       </div>
 
       <label class="field">
+        <span data-i18n="label_language">Language</span>
+        <select id="basicLanguage"></select>
+      </label>
+
+      <button id="advancedToggle" class="advanced-toggle" type="button" data-expanded="false">
+        <span id="advancedToggleLabel" data-i18n="show_advanced">Show advanced</span>
+        <span class="advanced-chevron" aria-hidden="true"></span>
+      </button>
+
+      <section id="advancedSection" class="advanced-section" aria-hidden="true">
+        <label class="field">
         <span data-i18n="label_interface_language">Interface language</span>
         <select id="interfaceLanguage"></select>
-      </label>
+        </label>
 
-      <label class="field">
+        <label class="field">
         <span data-i18n="label_results_language">Results language</span>
         <select id="resultsLanguage"></select>
-      </label>
+        </label>
 
-      <label class="field">
+        <label class="field">
         <span data-i18n="label_region">Region</span>
         <select id="region"></select>
-      </label>
+        </label>
+      </section>
 
       <p class="hint" data-i18n="popup_hint">
         Changes apply when you save.
