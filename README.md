@@ -16,7 +16,7 @@ Small local Chrome extension that forces Google searches toward your preferred i
 2. Turn on **Developer mode**.
 3. Click **Load unpacked**.
 4. Select this folder:
-   `/Users/nourashoush/Desktop/results-in-english`
+   `/Users/nourashoush/Desktop/language-switcher`
 5. Open the extension details page and turn on **Allow in Incognito**.
 
 ## Using the picker
@@ -30,6 +30,25 @@ Click the extension icon and set:
 The popup saves your settings and reloads the active tab.
 
 `Reset` now restores a true pass-through mode: `auto` interface language, `any` results language, and `auto` region bias.
+
+## Presets
+
+Open the popup and use **Manage presets** to open the full options page.
+
+The options page lets you:
+
+- save the current live settings as a named preset
+- create presets manually
+- edit or delete presets
+- apply a preset without reloading the current tab
+
+Applying a preset updates the saved extension settings immediately. Google picks those settings up on the next search or after a refresh.
+
+## Locale check
+
+To verify that every locale file includes the same message keys as English, run:
+
+`node scripts/check-locales.mjs`
 
 ## Notes
 

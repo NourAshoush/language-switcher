@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Options</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <div class="options-shell">
+      <aside class="sidebar" aria-label="Options sections">
+        <nav class="sidebar-nav">
+          <button class="sidebar-link is-active" type="button" data-target="overviewSection" data-i18n="options_sidebar_overview">Statistics</button>
+          <button class="sidebar-link" type="button" data-target="scopeSection" data-i18n="options_sidebar_scope">Applies to</button>
+          <button class="sidebar-link" type="button" data-target="presetsSection" data-i18n="options_sidebar_presets">Presets</button>
+        </nav>
+      </aside>
+
+      <main class="page">
+        <header class="page-header">
+          <div>
+            <h1 data-i18n="options_title">Options</h1>
+            <p class="intro" data-i18n="options_intro">Review usage and manage saved language combinations.</p>
+          </div>
+
+          <button id="themeToggle" class="theme-toggle" type="button" data-i18n-aria-label="theme_toggle_label" data-i18n-title="theme_toggle_label" aria-label="Toggle page theme" title="Toggle page theme">
+            <span class="theme-toggle-icon-slot" aria-hidden="true">
+              <span id="themeToggleIcon" class="theme-toggle-icon"></span>
+            </span>
+          </button>
+        </header>
+
+        <section id="overviewSection" class="page-section">
+          <div class="section-block-header">
+            <div>
+              <h2 data-i18n="options_overview_title">Statistics</h2>
+              <p class="section-copy" data-i18n="options_overview_intro">Track when the extension adjusts Google search settings for you.</p>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <article class="metric-block">
+              <p class="metric-label" data-i18n="options_stats_total">Adjusted searches</p>
+              <p id="statsTotal" class="metric-value">0</p>
+            </article>
+
+            <article class="metric-block">
+              <p id="statsRangeMetricLabel" class="metric-label" data-i18n="options_stats_selected_range">Selected range</p>
+              <p id="statsLastSevenDays" class="metric-value">0</p>
+            </article>
+          </div>
+
+          <section class="chart-section">
+            <div class="section-header section-header-actions">
+              <div>
+                <h3 data-i18n="options_stats_chart_title">Activity</h3>
+                <p class="section-copy" data-i18n="options_stats_chart_intro">Counted only when the extension changes Google search parameters.</p>
+                <p id="statsStatus" class="section-status" aria-live="polite"></p>
+              </div>
+              <div class="range-toggle" role="tablist" aria-label="Chart range">
+                <button id="rangeWeek" class="range-button is-active" type="button" data-range="week" data-i18n="options_stats_range_week">Week</button>
+                <button id="rangeMonth" class="range-button" type="button" data-range="month" data-i18n="options_stats_range_month">Month</button>
+                <button id="rangeYear" class="range-button" type="button" data-range="year" data-i18n="options_stats_range_year">Year</button>
+                <button id="rangeAll" class="range-button" type="button" data-range="all" data-i18n="options_stats_range_all">All time</button>
+              </div>
+            </div>
+
+            <div class="chart-frame">
+              <svg id="statsChart" class="stats-chart" viewBox="0 0 320 148" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="statsAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--chart-accent-top)" stop-opacity="0.28"></stop>
+                    <stop offset="55%" stop-color="var(--chart-accent-mid)" stop-opacity="0.12"></stop>
+                    <stop offset="100%" stop-color="var(--chart-accent-bottom)" stop-opacity="0"></stop>
+                  </linearGradient>
+                  <linearGradient id="statsLineGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="var(--chart-line-start)"></stop>
+                    <stop offset="100%" stop-color="var(--chart-line-end)"></stop>
+                  </linearGradient>
+                </defs>
+                <path id="statsAreaPath" class="chart-area" d=""></path>
+                <path id="statsLinePath" class="chart-line" d=""></path>
+              </svg>
+              <p id="statsChartEmpty" class="chart-empty" data-i18n="options_stats_chart_empty">No activity yet.</p>
+            </div>
+
+            <div id="statsLabels" class="chart-labels" aria-hidden="true"></div>
+          </section>
+        </section>
+
+        <section id="scopeSection" class="page-section">
+          <div class="section-block-header">
+            <div>
+              <h2 data-i18n="options_scope_title">Applies to</h2>
+              <p class="section-copy" data-i18n="options_scope_intro">Choose which Google products the extension should adjust.</p>
+              <p id="scopeStatus" class="section-status" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="scope-list">
+            <label class="scope-option">
+              <input id="applyToSearch" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_search_title">Google Search</span>
+                <span class="scope-option-description" data-i18n="options_scope_search_intro">Search results, search forms, and language parameters.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToMaps" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_maps_title">Google Maps</span>
+                <span class="scope-option-description" data-i18n="options_scope_maps_intro">Maps pages and map URLs that should follow your language settings.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToImages" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_images_title">Google Images</span>
+                <span class="scope-option-description" data-i18n="options_scope_images_intro">Image search results and image tabs on Google.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToNews" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_news_title">Google News</span>
+                <span class="scope-option-description" data-i18n="options_scope_news_intro">News search results and Google News pages.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToShopping" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_shopping_title">Google Shopping</span>
+                <span class="scope-option-description" data-i18n="options_scope_shopping_intro">Shopping results and Google Shopping pages.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToFlights" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_flights_title">Google Flights</span>
+                <span class="scope-option-description" data-i18n="options_scope_flights_intro">Google Flights pages and flight search results.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToHotels" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_hotels_title">Google Hotels</span>
+                <span class="scope-option-description" data-i18n="options_scope_hotels_intro">Google Hotels pages and hotel search results.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToVideos" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_videos_title">Google Videos</span>
+                <span class="scope-option-description" data-i18n="options_scope_videos_intro">Video search results on Google.</span>
+              </span>
+            </label>
+
+            <label class="scope-option">
+              <input id="applyToBooks" type="checkbox">
+              <span class="scope-option-copy">
+                <span class="scope-option-title" data-i18n="options_scope_books_title">Google Books</span>
+                <span class="scope-option-description" data-i18n="options_scope_books_intro">Book search results and Google Books pages.</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <section id="presetsSection" class="page-section">
+          <div class="section-block-header">
+            <div>
+              <h2 data-i18n="options_presets_title">Saved presets</h2>
+              <p class="section-copy" data-i18n="options_presets_intro">Create named combinations you can apply later.</p>
+              <p id="presetListStatus" class="section-status" aria-live="polite"></p>
+            </div>
+            <button id="newPresetButton" type="button" data-i18n="options_new_preset">New preset</button>
+          </div>
+
+          <section id="editorCard" class="editor-card" hidden>
+            <div class="section-header">
+              <div>
+                <h3 id="editorTitle">New preset</h3>
+                <p id="editorConflictMessage" class="editor-conflict-message" aria-live="polite"></p>
+              </div>
+            </div>
+
+            <form id="presetForm" class="editor-form">
+              <label id="presetNameField" class="field field-text">
+                <span class="sr-only" data-i18n="label_preset_name">Preset name</span>
+                <span class="text-field-control">
+                  <input
+                    id="presetName"
+                    type="text"
+                    maxlength="32"
+                    data-i18n-aria-label="label_preset_name"
+                    data-i18n-title="label_preset_name"
+                    placeholder=" "
+                    aria-describedby="presetNameSupportingText"
+                    aria-invalid="false"
+                  >
+                  <span class="floating-label" data-i18n="label_preset_name">Preset name</span>
+                </span>
+                <span
+                  id="presetNameSupportingText"
+                  class="supporting-text"
+                  data-default-message="Use a name you'll recognize later."
+                  data-i18n="preset_name_supporting"
+                >Use a name you'll recognize later.</span>
+              </label>
+
+              <label class="field">
+                <span data-i18n="label_interface_language">Interface language</span>
+                <select id="editorInterfaceLanguage"></select>
+              </label>
+
+              <label class="field">
+                <span data-i18n="label_results_language">Results language</span>
+                <select id="editorResultsLanguage"></select>
+              </label>
+
+              <label class="field">
+                <span data-i18n="label_region">Region</span>
+                <select id="editorRegion"></select>
+              </label>
+
+              <div class="actions">
+                <button id="savePresetButton" type="submit" data-i18n="button_save_preset">Save preset</button>
+                <button id="cancelPresetButton" type="button" class="secondary" data-i18n="button_cancel">Cancel</button>
+              </div>
+            </form>
+          </section>
+
+          <div id="emptyState" class="empty-state" hidden>
+            <p data-i18n="options_empty_intro">You do not have any saved presets yet.</p>
+          </div>
+
+          <div id="presetList" class="preset-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

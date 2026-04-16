@@ -1,39 +1,368 @@
 {
-  "ext_name": { "message": "Google Search Language Switcher" },
-  "ext_description": { "message": "Fuerza las páginas de búsqueda de Google a usar tu idioma de interfaz y de resultados preferidos." },
-  "action_title": { "message": "Search Language Switcher" },
-  "popup_title": { "message": "Preferencias de idioma" },
-  "popup_intro": { "message": "Configura el idioma y la región preferidos para la Búsqueda de Google." },
-  "popup_hint": { "message": "Los cambios se aplican al guardar." },
-  "label_language": { "message": "Idioma" },
-  "label_interface_language": { "message": "Idioma de la interfaz" },
-  "label_results_language": { "message": "Idioma de los resultados" },
-  "label_region": { "message": "Región" },
-  "button_save": { "message": "Guardar" },
-  "button_reset": { "message": "Restablecer" },
-  "show_advanced": { "message": "Mostrar opciones avanzadas" },
-  "hide_advanced": { "message": "Ocultar opciones avanzadas" },
-  "theme_toggle_label": { "message": "Cambiar el tema de la ventana emergente" },
-  "status_saved": { "message": "Guardado. Recargando la pestaña activa." },
-  "status_reset": { "message": "Se restauraron los valores predeterminados." },
-  "option_auto": { "message": "Automático" },
-  "option_custom": { "message": "Personalizado" },
-  "option_any_language": { "message": "Cualquier idioma" },
-  "language_name_ar": { "message": "árabe" },
-  "language_name_de": { "message": "alemán" },
-  "language_name_en": { "message": "inglés" },
-  "language_name_es": { "message": "español" },
-  "language_name_fr": { "message": "francés" },
-  "language_name_it": { "message": "italiano" },
-  "language_name_ja": { "message": "japonés" },
-  "language_name_ko": { "message": "coreano" },
-  "language_name_pt": { "message": "portugués" },
-  "language_name_zh": { "message": "chino" },
-  "region_name_au": { "message": "Australia" },
-  "region_name_ca": { "message": "Canadá" },
-  "region_name_de": { "message": "Alemania" },
-  "region_name_fr": { "message": "Francia" },
-  "region_name_gb": { "message": "Reino Unido" },
-  "region_name_jp": { "message": "Japón" },
-  "region_name_us": { "message": "Estados Unidos" }
+  "ext_name": {
+    "message": "Google Search Language Switcher"
+  },
+  "ext_description": {
+    "message": "Fuerza las páginas de búsqueda de Google a usar tu idioma de interfaz y de resultados preferidos."
+  },
+  "action_title": {
+    "message": "Search Language Switcher"
+  },
+  "popup_title": {
+    "message": "Preferencias de idioma"
+  },
+  "popup_intro": {
+    "message": "Configura el idioma y la región preferidos para la Búsqueda de Google."
+  },
+  "popup_hint": {
+    "message": "Los cambios se aplican al guardar."
+  },
+  "label_language": {
+    "message": "Idioma"
+  },
+  "label_interface_language": {
+    "message": "Idioma de la interfaz"
+  },
+  "label_results_language": {
+    "message": "Idioma de los resultados"
+  },
+  "label_region": {
+    "message": "Región"
+  },
+  "button_save": {
+    "message": "Guardar"
+  },
+  "button_reset": {
+    "message": "Restablecer"
+  },
+  "button_cancel": {
+    "message": "Cancelar"
+  },
+  "button_apply": {
+    "message": "Aplicar"
+  },
+  "button_applied": {
+    "message": "Aplicado"
+  },
+  "button_edit": {
+    "message": "Editar"
+  },
+  "button_delete": {
+    "message": "Eliminar"
+  },
+  "button_confirm_delete": {
+    "message": "Eliminar"
+  },
+  "button_keep": {
+    "message": "Conservar"
+  },
+  "button_save_preset": {
+    "message": "Guardar preajuste"
+  },
+  "show_advanced": {
+    "message": "Mostrar opciones avanzadas"
+  },
+  "hide_advanced": {
+    "message": "Ocultar opciones avanzadas"
+  },
+  "theme_toggle_label": {
+    "message": "Cambiar el tema de la ventana emergente"
+  },
+  "status_saved": {
+    "message": "Guardado. Recargando la pestaña activa."
+  },
+  "status_reset": {
+    "message": "Se restauraron los valores predeterminados."
+  },
+  "status_preset_saved": {
+    "message": "Preajuste guardado. Los cambios se aplican en la próxima búsqueda de Google o después de recargar."
+  },
+  "status_preset_applied": {
+    "message": "Preajuste aplicado. Los cambios se aplican en la próxima búsqueda de Google o después de recargar."
+  },
+  "status_preset_deleted": {
+    "message": "Preajuste eliminado."
+  },
+  "option_auto": {
+    "message": "Automático"
+  },
+  "option_custom": {
+    "message": "Personalizado"
+  },
+  "option_any_language": {
+    "message": "Cualquier idioma"
+  },
+  "optiongroup_languages": {
+    "message": "Idiomas"
+  },
+  "optiongroup_presets": {
+    "message": "Preajustes"
+  },
+  "popup_manage_presets": {
+    "message": "Options"
+  },
+  "options_title": {
+    "message": "Options"
+  },
+  "options_intro": {
+    "message": "Review usage and manage saved language combinations."
+  },
+  "options_current_title": {
+    "message": "Configuración actual"
+  },
+  "options_current_intro": {
+    "message": "Esta es la configuración aplicada actualmente a la Búsqueda de Google."
+  },
+  "options_save_current": {
+    "message": "Guardar la configuración actual como preajuste"
+  },
+  "options_presets_title": {
+    "message": "Preajustes guardados"
+  },
+  "options_presets_intro": {
+    "message": "Crea combinaciones con nombre que puedas aplicar más tarde."
+  },
+  "options_new_preset": {
+    "message": "Nuevo preajuste"
+  },
+  "options_empty_title": {
+    "message": "Todavía no hay preajustes"
+  },
+  "options_empty_intro": {
+    "message": "Crea un preajuste para volver a usar esta combinación de idioma más tarde."
+  },
+  "options_editor_new_title": {
+    "message": "Nuevo preajuste"
+  },
+  "options_editor_edit_title": {
+    "message": "Editar preajuste"
+  },
+  "options_editor_current_title": {
+    "message": "Guardar configuración actual"
+  },
+  "options_delete_confirm": {
+    "message": "¿Eliminar este preajuste?"
+  },
+  "label_preset_name": {
+    "message": "Nombre del preajuste"
+  },
+  "placeholder_preset_name": {
+    "message": "Inglés / EE. UU."
+  },
+  "preset_current_tag": {
+    "message": "Actual"
+  },
+  "validation_preset_name": {
+    "message": "Introduce un nombre para el preajuste."
+  },
+  "validation_preset_name_duplicate": {
+    "message": "Ya existe un preajuste llamado \"$1\"."
+  },
+  "validation_preset_duplicate_named": {
+    "message": "Estos ajustes ya coinciden con \"$1\"."
+  },
+  "language_name_ar": {
+    "message": "árabe"
+  },
+  "language_name_de": {
+    "message": "alemán"
+  },
+  "language_name_en": {
+    "message": "inglés"
+  },
+  "language_name_es": {
+    "message": "español"
+  },
+  "language_name_fr": {
+    "message": "francés"
+  },
+  "language_name_it": {
+    "message": "italiano"
+  },
+  "language_name_ja": {
+    "message": "japonés"
+  },
+  "language_name_ko": {
+    "message": "coreano"
+  },
+  "language_name_pt": {
+    "message": "portugués"
+  },
+  "language_name_zh": {
+    "message": "chino"
+  },
+  "region_name_au": {
+    "message": "Australia"
+  },
+  "region_name_ca": {
+    "message": "Canadá"
+  },
+  "region_name_de": {
+    "message": "Alemania"
+  },
+  "region_name_fr": {
+    "message": "Francia"
+  },
+  "region_name_gb": {
+    "message": "Reino Unido"
+  },
+  "region_name_jp": {
+    "message": "Japón"
+  },
+  "region_name_us": {
+    "message": "Estados Unidos"
+  },
+  "options_sidebar_label": {
+    "message": "Options"
+  },
+  "options_sidebar_intro": {
+    "message": "Overview and presets for your search preferences."
+  },
+  "options_sidebar_overview": {
+    "message": "Statistics"
+  },
+  "options_sidebar_presets": {
+    "message": "Presets"
+  },
+  "options_overview_title": {
+    "message": "Statistics"
+  },
+  "options_overview_intro": {
+    "message": "Track when the extension adjusts Google search settings for you."
+  },
+  "options_stats_total": {
+    "message": "Adjusted searches"
+  },
+  "options_stats_last_7_days": {
+    "message": "Last 7 days"
+  },
+  "options_stats_selected_range": {
+    "message": "Selected range"
+  },
+  "options_stats_metric_week": {
+    "message": "Last 7 days"
+  },
+  "options_stats_metric_month": {
+    "message": "Last 30 days"
+  },
+  "options_stats_metric_year": {
+    "message": "Last 12 months"
+  },
+  "options_stats_metric_all": {
+    "message": "All time"
+  },
+  "options_stats_chart_title": {
+    "message": "Activity"
+  },
+  "options_stats_chart_intro": {
+    "message": "Counted only when the extension changes Google search parameters."
+  },
+  "options_stats_chart_empty": {
+    "message": "No activity yet."
+  },
+  "options_stats_range_week": {
+    "message": "Week"
+  },
+  "options_stats_range_month": {
+    "message": "Month"
+  },
+  "options_stats_range_year": {
+    "message": "Year"
+  },
+  "options_stats_range_all": {
+    "message": "All time"
+  },
+  "preset_name_supporting": {
+    "message": "Use a name you'll recognize later."
+  },
+  "options_sidebar_contact": {
+    "message": "Contact"
+  },
+  "options_contact_title": {
+    "message": "Contact"
+  },
+  "options_contact_intro": {
+    "message": "Add your support details here before publishing."
+  },
+  "options_contact_email_label": {
+    "message": "Email"
+  },
+  "options_contact_email_value": {
+    "message": "Replace with your support email"
+  },
+  "options_contact_site_label": {
+    "message": "Website"
+  },
+  "options_contact_site_value": {
+    "message": "Replace with your site or feedback link"
+  },
+  "options_scope_title": {
+    "message": "Applies to"
+  },
+  "options_scope_intro": {
+    "message": "Choose which Google products the extension should adjust."
+  },
+  "options_scope_search_title": {
+    "message": "Google Search"
+  },
+  "options_scope_search_intro": {
+    "message": "Search results, search forms, and language parameters."
+  },
+  "options_scope_maps_title": {
+    "message": "Google Maps"
+  },
+  "options_scope_maps_intro": {
+    "message": "Maps pages and map URLs that should follow your language settings."
+  },
+  "options_scope_updated": {
+    "message": "$1 updated."
+  },
+  "status_preset_reordered": {
+    "message": "Preset order updated."
+  },
+  "options_sidebar_scope": {
+    "message": "Applies to"
+  },
+  "options_scope_images_title": {
+    "message": "Google Images"
+  },
+  "options_scope_images_intro": {
+    "message": "Image search results and image tabs on Google."
+  },
+  "options_scope_news_title": {
+    "message": "Google News"
+  },
+  "options_scope_news_intro": {
+    "message": "News search results and Google News pages."
+  },
+  "options_scope_shopping_title": {
+    "message": "Google Shopping"
+  },
+  "options_scope_shopping_intro": {
+    "message": "Shopping results and Google Shopping pages."
+  },
+  "options_scope_flights_title": {
+    "message": "Google Flights"
+  },
+  "options_scope_flights_intro": {
+    "message": "Google Flights pages and flight search results."
+  },
+  "options_scope_hotels_title": {
+    "message": "Google Hotels"
+  },
+  "options_scope_hotels_intro": {
+    "message": "Google Hotels pages and hotel search results."
+  },
+  "options_scope_videos_title": {
+    "message": "Google Videos"
+  },
+  "options_scope_videos_intro": {
+    "message": "Video search results on Google."
+  },
+  "options_scope_books_title": {
+    "message": "Google Books"
+  },
+  "options_scope_books_intro": {
+    "message": "Book search results and Google Books pages."
+  }
 }

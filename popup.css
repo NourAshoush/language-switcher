@@ -1,6 +1,6 @@
 :root {
   color-scheme: light dark;
-  font-family: Roboto, "Segoe UI", Arial, sans-serif;
+  font-family: "Montserrat", Roboto, "Segoe UI", Arial, sans-serif;
   --bg: #f8fafd;
   --panel: #ffffff;
   --border: #dadce0;
@@ -93,7 +93,7 @@ h1 {
   line-height: 1.18;
   font-weight: 600;
   letter-spacing: -0.012em;
-  font-family: "Google Sans", "Google Sans Text", Roboto, Arial, sans-serif;
+  font-family: "Montserrat", "Google Sans", "Google Sans Text", Roboto, Arial, sans-serif;
 }
 
 .intro,
@@ -140,7 +140,7 @@ button,
   border-radius: 0;
   background: transparent;
   color: var(--accent);
-  font-family: "Google Sans", "Google Sans Text", Roboto, Arial, sans-serif;
+  font-family: "Montserrat", "Google Sans", "Google Sans Text", Roboto, Arial, sans-serif;
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
@@ -256,11 +256,32 @@ button,
   transition: opacity 160ms ease, transform 160ms ease;
 }
 
-.theme-toggle-icon svg {
+.theme-mode-icon {
   width: 20px;
   height: 20px;
   display: block;
-  stroke: currentColor;
+  background-color: currentColor;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
+.theme-mode-system {
+  mask-image: url("assets/icons/laptop.svg");
+  -webkit-mask-image: url("assets/icons/laptop.svg");
+}
+
+.theme-mode-dark {
+  mask-image: url("assets/icons/moon.svg");
+  -webkit-mask-image: url("assets/icons/moon.svg");
+}
+
+.theme-mode-light {
+  mask-image: url("assets/icons/sun.svg");
+  -webkit-mask-image: url("assets/icons/sun.svg");
 }
 
 .theme-toggle.is-transitioning .theme-toggle-icon {
@@ -348,7 +369,7 @@ button {
 
 button,
 .theme-toggle {
-  font-family: "Google Sans", "Google Sans Text", Roboto, Arial, sans-serif;
+  font-family: "Montserrat", "Google Sans", "Google Sans Text", Roboto, Arial, sans-serif;
 }
 
 button.secondary {
@@ -363,6 +384,27 @@ button:hover {
 
 button.secondary:hover {
   background: var(--tonal-hover);
+}
+
+button.text-link {
+  width: auto;
+  min-height: 0;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: left;
+  box-shadow: none;
+}
+
+button.text-link:hover {
+  background: transparent;
+  color: var(--accent-strong);
 }
 
 

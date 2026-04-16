@@ -12,6 +12,10 @@
     "default_title": "__MSG_action_title__",
     "default_popup": "popup.html"
   },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
     {
       "matches": [

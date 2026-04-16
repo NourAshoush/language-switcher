@@ -1,10 +1,28 @@
-const DEFAULT_SETTINGS = {
-  interfaceLanguage: "auto",
-  resultsLanguage: "any",
-  region: "auto"
-};
+const {
+  DEFAULT_SETTINGS,
+  DEFAULT_THEME,
+  THEME_ORDER,
+  getMessage,
+  localizeStaticText,
+  buildInterfaceLanguageOptions,
+  buildResultsLanguageOptions,
+  buildRegionOptions,
+  populateSelect,
+  ensureValidValue,
+  applyTheme,
+  buildLanguageLabel,
+  LANGUAGE_CODES
+} = window.LanguageSwitcherShared;
+
+const PRESETS_KEY = "presets";
 const DEFAULT_UI_STATE = {
   advancedOpen: false
+};
+const CUSTOM_BASIC_VALUE = "__custom__";
+const LIVE_SETTING_DEFAULTS = {
+  interfaceLanguage: DEFAULT_SETTINGS.interfaceLanguage,
+  resultsLanguage: DEFAULT_SETTINGS.resultsLanguage,
+  region: DEFAULT_SETTINGS.region
 };
 
 const basicLanguageInput = document.getElementById("basicLanguage");
@@ -19,193 +37,102 @@ const themeToggleIcon = document.getElementById("themeToggleIcon");
 const advancedToggle = document.getElementById("advancedToggle");
 const advancedToggleLabel = document.getElementById("advancedToggleLabel");
 const advancedSection = document.getElementById("advancedSection");
+const managePresetsButton = document.getElementById("managePresetsButton");
 const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
 const popupRoot = document.documentElement;
 
-const DEFAULT_THEME = "system";
-const THEME_ORDER = ["system", "dark", "light"];
-const CUSTOM_BASIC_VALUE = "__custom__";
-const THEME_ICONS = {
-  system: `
-    <svg viewBox="0 0 16 16" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2.5" y="3" width="11" height="8" rx="1.5"></rect>
-      <path d="M6 13h4"></path>
-      <path d="M8 11v2"></path>
-    </svg>
-  `,
-  dark: `
-    <svg viewBox="0 0 16 16" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M10.9 2.4a5.5 5.5 0 1 0 2.7 9.8 6 6 0 1 1-2.7-9.8Z"></path>
-    </svg>
-  `,
-  light: `
-    <svg viewBox="0 0 16 16" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="8" cy="8" r="2.6"></circle>
-      <path d="M8 1.7v1.6"></path>
-      <path d="M8 12.7v1.6"></path>
-      <path d="M1.7 8h1.6"></path>
-      <path d="M12.7 8h1.6"></path>
-      <path d="M3.4 3.4 4.5 4.5"></path>
-      <path d="M11.5 11.5 12.6 12.6"></path>
-      <path d="M12.6 3.4 11.5 4.5"></path>
-      <path d="M4.5 11.5 3.4 12.6"></path>
-    </svg>
-  `
+const state = {
+  presets: []
 };
-
-const LANGUAGE_CODES = ["ar", "de", "en", "es", "fr", "it", "ja", "ko", "pt", "zh"];
-const NATIVE_LANGUAGE_NAMES = {
-  ar: "العربية",
-  de: "Deutsch",
-  en: "English",
-  es: "Español",
-  fr: "français",
-  it: "italiano",
-  ja: "日本語",
-  ko: "한국어",
-  pt: "Português",
-  zh: "中文"
-};
-const REGION_CODES = ["au", "ca", "de", "fr", "gb", "jp", "us"];
-
-function getMessage(key, substitutions) {
-  return chrome.i18n.getMessage(key, substitutions) || "";
-}
-
-function localizeStaticText() {
-  for (const element of document.querySelectorAll("[data-i18n]")) {
-    const key = element.dataset.i18n;
-    const message = getMessage(key);
-    if (message) {
-      element.textContent = message;
-    }
-  }
-
-  for (const element of document.querySelectorAll("[data-i18n-aria-label]")) {
-    const key = element.dataset.i18nAriaLabel;
-    const message = getMessage(key);
-    if (message) {
-      element.setAttribute("aria-label", message);
-    }
-  }
-
-  for (const element of document.querySelectorAll("[data-i18n-title]")) {
-    const key = element.dataset.i18nTitle;
-    const message = getMessage(key);
-    if (message) {
-      element.setAttribute("title", message);
-    }
-  }
-}
-
-function buildLanguageLabel(languageCode) {
-  const localized = getMessage(`language_name_${languageCode}`) || languageCode;
-  const nativeName = NATIVE_LANGUAGE_NAMES[languageCode] || localized;
-
-  if (localized.trim().toLowerCase() === nativeName.trim().toLowerCase()) {
-    return localized;
-  }
-
-  return `${localized} (${nativeName})`;
-}
-
-function buildLanguageOptions() {
-  return [
-    { value: "auto", label: getMessage("option_auto") || "Auto" },
-    ...LANGUAGE_CODES.map((code) => ({
-      value: code,
-      label: buildLanguageLabel(code)
-    }))
-  ];
-}
-
-function buildResultsLanguageOptions() {
-  return [
-    ...LANGUAGE_CODES.map((code) => ({
-      value: code,
-      label: buildLanguageLabel(code)
-    })),
-    { value: "any", label: getMessage("option_any_language") || "Any language" }
-  ];
-}
-
-function buildBasicLanguageOptions() {
-  return [
-    { value: "auto", label: getMessage("option_auto") || "Auto" },
-    ...LANGUAGE_CODES.map((code) => ({
-      value: code,
-      label: buildLanguageLabel(code)
-    })),
-    {
-      value: CUSTOM_BASIC_VALUE,
-      label: getMessage("option_custom") || "Custom",
-      disabled: true
-    }
-  ];
-}
-
-function buildRegionOptions() {
-  return [
-    { value: "auto", label: getMessage("option_auto") || "Auto" },
-    ...REGION_CODES.map((code) => ({
-      value: code,
-      label: getMessage(`region_name_${code}`) || code.toUpperCase()
-    }))
-  ];
-}
+const statusTimers = new WeakMap();
 
 function setStatus(message) {
-  status.textContent = message;
-}
-
-function getResolvedTheme(themePreference) {
-  if (themePreference === "system") {
-    return themeMedia.matches ? "dark" : "light";
+  const existingTimer = statusTimers.get(status);
+  if (existingTimer) {
+    window.clearTimeout(existingTimer);
+    statusTimers.delete(status);
   }
 
-  return themePreference;
-}
+  status.textContent = message;
 
-function renderTheme(themePreference) {
-  const resolvedTheme = getResolvedTheme(themePreference);
-  document.body.dataset.theme = resolvedTheme;
-  themeToggleIcon.innerHTML = THEME_ICONS[themePreference];
-  themeToggle.dataset.themePreference = themePreference;
-}
-
-function applyTheme(themePreference, animated = false) {
-  if (!animated) {
-    renderTheme(themePreference);
+  if (!message) {
     return;
   }
 
-  themeToggle.classList.add("is-transitioning");
-
-  window.setTimeout(() => {
-    renderTheme(themePreference);
-    themeToggle.classList.remove("is-transitioning");
-  }, 120);
-}
-
-function populateSelect(select, options) {
-  select.textContent = "";
-  for (const option of options) {
-    const element = document.createElement("option");
-    element.value = option.value;
-    element.textContent = option.label;
-    if (option.disabled) {
-      element.disabled = true;
+  const timerId = window.setTimeout(() => {
+    if (statusTimers.get(status) !== timerId) {
+      return;
     }
-    select.appendChild(element);
-  }
+
+    statusTimers.delete(status);
+    status.textContent = "";
+  }, 5000);
+
+  statusTimers.set(status, timerId);
 }
 
-function ensureValidValue(select, fallback) {
-  const values = Array.from(select.options, (option) => option.value);
+function normalizePresetList(presets) {
+  return (Array.isArray(presets) ? presets : [])
+    .filter((preset) => preset && typeof preset === "object" && typeof preset.id === "string")
+    .map((preset, index) => ({
+      ...preset,
+      order: Number.isFinite(preset.order) ? preset.order : index
+    }))
+    .sort((left, right) => left.order - right.order);
+}
 
-  if (!values.includes(select.value)) {
-    select.value = fallback;
+function presetOptionValue(id) {
+  return `preset:${id}`;
+}
+
+function findMatchingPreset(settings) {
+  return state.presets.find(
+    (preset) =>
+      preset.interfaceLanguage === settings.interfaceLanguage &&
+      preset.resultsLanguage === settings.resultsLanguage &&
+      preset.region === settings.region
+  );
+}
+
+function appendOption(parent, value, label, disabled = false) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = label;
+  option.disabled = disabled;
+  parent.appendChild(option);
+}
+
+function renderBasicLanguageSelect(settings) {
+  const selectedValue = deriveBasicValue(settings);
+  basicLanguageInput.textContent = "";
+
+  appendOption(basicLanguageInput, "auto", getMessage("option_auto") || "Auto");
+
+  const languageGroup = document.createElement("optgroup");
+  languageGroup.label = getMessage("optiongroup_languages") || "Languages";
+  for (const code of LANGUAGE_CODES) {
+    appendOption(languageGroup, code, buildLanguageLabel(code));
   }
+  basicLanguageInput.appendChild(languageGroup);
+
+  if (state.presets.length > 0) {
+    const presetGroup = document.createElement("optgroup");
+    presetGroup.label = getMessage("optiongroup_presets") || "Presets";
+    for (const preset of state.presets) {
+      appendOption(presetGroup, presetOptionValue(preset.id), preset.name);
+    }
+    basicLanguageInput.appendChild(presetGroup);
+  }
+
+  appendOption(
+    basicLanguageInput,
+    CUSTOM_BASIC_VALUE,
+    getMessage("option_custom") || "Custom",
+    true
+  );
+
+  basicLanguageInput.value = selectedValue;
+  ensureValidValue(basicLanguageInput, "auto");
 }
 
 function applySettings(settings) {
@@ -216,8 +143,7 @@ function applySettings(settings) {
   ensureValidValue(interfaceInput, DEFAULT_SETTINGS.interfaceLanguage);
   ensureValidValue(resultsInput, DEFAULT_SETTINGS.resultsLanguage);
   ensureValidValue(regionInput, DEFAULT_SETTINGS.region);
-  basicLanguageInput.value = deriveBasicValue(settings);
-  ensureValidValue(basicLanguageInput, "auto");
+  renderBasicLanguageSelect(settings);
 }
 
 function readSettingsFromForm() {
@@ -229,6 +155,11 @@ function readSettingsFromForm() {
 }
 
 function deriveBasicValue(settings) {
+  const matchingPreset = findMatchingPreset(settings);
+  if (matchingPreset) {
+    return presetOptionValue(matchingPreset.id);
+  }
+
   if (
     settings.interfaceLanguage === "auto" &&
     settings.resultsLanguage === "any" &&
@@ -253,6 +184,16 @@ function applyBasicValue(value) {
     interfaceInput.value = "auto";
     resultsInput.value = "any";
     regionInput.value = "auto";
+    return;
+  }
+
+  if (value.startsWith("preset:")) {
+    const preset = state.presets.find((item) => presetOptionValue(item.id) === value);
+    if (preset) {
+      interfaceInput.value = preset.interfaceLanguage;
+      resultsInput.value = preset.resultsLanguage;
+      regionInput.value = preset.region;
+    }
     return;
   }
 
@@ -289,12 +230,27 @@ function setAdvancedOpen(open) {
   advancedToggleLabel.textContent = getMessage(open ? "hide_advanced" : "show_advanced");
 }
 
+function refreshFromStorage() {
+  chrome.storage.sync.get({ ...DEFAULT_SETTINGS, ...DEFAULT_UI_STATE, [PRESETS_KEY]: [] }, (stored) => {
+    state.presets = normalizePresetList(stored[PRESETS_KEY]);
+    applySettings(stored);
+    applyTheme({
+      body: document.body,
+      toggleButton: themeToggle,
+      iconElement: themeToggleIcon,
+      mediaQuery: themeMedia,
+      themePreference: stored.themePreference || DEFAULT_THEME
+    });
+    setAdvancedOpen(Boolean(stored.advancedOpen));
+  });
+}
+
 localizeStaticText();
-populateSelect(basicLanguageInput, buildBasicLanguageOptions());
-populateSelect(interfaceInput, buildLanguageOptions());
+populateSelect(interfaceInput, buildInterfaceLanguageOptions());
 populateSelect(resultsInput, buildResultsLanguageOptions());
 populateSelect(regionInput, buildRegionOptions());
 popupRoot.lang = chrome.i18n.getUILanguage();
+refreshFromStorage();
 
 for (const select of [basicLanguageInput, interfaceInput, resultsInput, regionInput]) {
   select.addEventListener("focus", () => {
@@ -315,14 +271,14 @@ basicLanguageInput.addEventListener("change", () => {
   if (basicLanguageInput.value !== CUSTOM_BASIC_VALUE) {
     applyBasicValue(basicLanguageInput.value);
   }
+  renderBasicLanguageSelect(readSettingsFromForm());
   setFieldActiveState(basicLanguageInput, false);
   basicLanguageInput.blur();
 });
 
 for (const select of [interfaceInput, resultsInput, regionInput]) {
   select.addEventListener("change", () => {
-    basicLanguageInput.value = deriveBasicValue(readSettingsFromForm());
-    ensureValidValue(basicLanguageInput, "auto");
+    renderBasicLanguageSelect(readSettingsFromForm());
   });
 }
 
@@ -333,18 +289,19 @@ advancedToggle.addEventListener("click", () => {
   advancedToggle.blur();
 });
 
-chrome.storage.sync.get({ ...DEFAULT_SETTINGS, ...DEFAULT_UI_STATE }, (settings) => {
-  applySettings(settings);
-  applyTheme(settings.themePreference || DEFAULT_THEME);
-  setAdvancedOpen(Boolean(settings.advancedOpen));
-});
-
 themeToggle.addEventListener("click", () => {
   const currentTheme = themeToggle.dataset.themePreference || DEFAULT_THEME;
   const nextIndex = (THEME_ORDER.indexOf(currentTheme) + 1) % THEME_ORDER.length;
   const nextTheme = THEME_ORDER[nextIndex];
 
-  applyTheme(nextTheme, true);
+  applyTheme({
+    body: document.body,
+    toggleButton: themeToggle,
+    iconElement: themeToggleIcon,
+    mediaQuery: themeMedia,
+    themePreference: nextTheme,
+    animated: true
+  });
   chrome.storage.sync.set({ themePreference: nextTheme });
   themeToggle.blur();
 });
@@ -352,9 +309,20 @@ themeToggle.addEventListener("click", () => {
 themeMedia.addEventListener("change", () => {
   chrome.storage.sync.get({ themePreference: DEFAULT_THEME }, (settings) => {
     if ((settings.themePreference || DEFAULT_THEME) === "system") {
-      applyTheme("system");
+      applyTheme({
+        body: document.body,
+        toggleButton: themeToggle,
+        iconElement: themeToggleIcon,
+        mediaQuery: themeMedia,
+        themePreference: "system"
+      });
     }
   });
+});
+
+managePresetsButton.addEventListener("click", () => {
+  chrome.runtime.openOptionsPage();
+  managePresetsButton.blur();
 });
 
 saveButton.addEventListener("click", () => {
@@ -368,10 +336,41 @@ saveButton.addEventListener("click", () => {
 });
 
 defaultsButton.addEventListener("click", () => {
-  applySettings(DEFAULT_SETTINGS);
-  chrome.storage.sync.set({ ...DEFAULT_SETTINGS }, () => {
+  applySettings(LIVE_SETTING_DEFAULTS);
+  chrome.storage.sync.set({ ...LIVE_SETTING_DEFAULTS }, () => {
     setStatus(getMessage("status_reset") || "Default settings restored.");
     reloadActiveTab();
   });
   defaultsButton.blur();
 });
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== "sync") {
+    return;
+  }
+
+  if (changes.themePreference) {
+    applyTheme({
+      body: document.body,
+      toggleButton: themeToggle,
+      iconElement: themeToggleIcon,
+      mediaQuery: themeMedia,
+      themePreference: changes.themePreference.newValue || DEFAULT_THEME
+    });
+  }
+
+  if (changes[PRESETS_KEY]) {
+    state.presets = normalizePresetList(changes[PRESETS_KEY].newValue);
+    renderBasicLanguageSelect(readSettingsFromForm());
+  }
+
+  if (changes.interfaceLanguage || changes.resultsLanguage || changes.region) {
+    applySettings({
+      interfaceLanguage: changes.interfaceLanguage?.newValue ?? interfaceInput.value,
+      resultsLanguage: changes.resultsLanguage?.newValue ?? resultsInput.value,
+      region: changes.region?.newValue ?? regionInput.value
+    });
+  }
+});
+
+window.addEventListener("focus", refreshFromStorage);
